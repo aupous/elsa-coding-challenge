@@ -1,0 +1,31 @@
+@startuml Architecture Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component diagram for Real-Time Vocabulary Quiz Application
+
+Container(client, "Client (Web / App)", "", "Provides functionality to join, take the quiz and view the score, leaderboard,...")
+ContainerDb(db, "Database", "MongoDB", "Stores users, quizs infomation, the results (answers, score) of users for the quizs")
+ContainerDb(redis, "Cache", "Redis", "Store quizs, leaderboard info")
+
+Container_Boundary(api, "API Application") {
+    Component(auth, "Auth Handler", "Gin Handler", "Allow users to sign in to the quiz system.")
+    Component(leaderboard, "Leaderboard Handler", "Gin Handler", "Allows users to get rank and score, the leaderboard data.")
+    Component(quiz, "Quiz Handler", "Gin Handler", "Allows users to get the quiz, submit answers, calculate user's score and update to leaderboard.")
+}
+
+Rel(client, auth, "Sign in and get token", "JSON/HTTPS")
+Rel(client, quiz, "Get quizs, submit answer", "JSON/HTTPS")
+Rel(client, leaderboard, "Get leaderboard info, user's rank and score", "JSON/HTTPS")
+
+Rel(quiz, redis, "Add user's score to sorted set", "Redis SDK")
+Rel(quiz, redis, "Get/set quizs info", "Redis SDK")
+Rel(quiz, db, "Get quizs, store user answers", Mongoose)
+
+Rel(leaderboard, redis, "Get leaderboard info, user's rank and score", "Redis SDK")
+
+
+@enduml
