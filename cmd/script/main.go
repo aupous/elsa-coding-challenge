@@ -15,6 +15,7 @@ import (
 const (
 	QUIZ_KEY = "test_key"
 	NO_USERS = 10000
+	USER_ID  = "user-100"
 )
 
 func main() {
@@ -44,8 +45,7 @@ func main() {
 		panic(err)
 	}
 
-	userId := "user-100"
-	rank, score, err := sortedSetCache.ZRevRankWithScore(ctx, QUIZ_KEY, "user-100")
+	rank, score, err := sortedSetCache.ZRevRankWithScore(ctx, QUIZ_KEY, USER_ID)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ func main() {
 	log.Info().Fields(map[string]interface{}{
 		"topTen": topTen,
 		"user": map[string]interface{}{
-			"id":    userId,
+			"id":    USER_ID,
 			"rank":  rank,
 			"score": score,
 		},
